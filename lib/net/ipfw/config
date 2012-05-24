@@ -1,0 +1,18 @@
+net_ipfw_db="net_ipfw.sqlite"
+net_ipfw_tb="ipfw_rule"
+
+net_ipfw_default=0
+net_ipfw="sudo /sbin/ipfw -q"
+net_ipfw_log="/var/log/kernel.log"
+
+net_ipfw_lo="127.0.0.0/8"
+
+net_ipfw_rp=0
+net_ipfw_sp=0
+
+# rule partitions
+net_ipfw_meme=10000
+net_ipfw_spoof=20000
+net_ipfw_nmap=30000
+net_ipfw_frag=40000
+net_ipfw_lock=50000

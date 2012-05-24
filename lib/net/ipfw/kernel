@@ -1,0 +1,89 @@
+function help/net/ipfw() {
+  cat <<EOF
+%admin ALL = (root) NOPASSWD:/sbin/ipfw
+EOF
+}
+
+function net/ipfw/init() {
+  import sql
+  msg/debug "Database: ${net_ipfw_db}"
+  answer "Create database?"
+  if test $? -gt 0 ; then
+    return ${_false_}
+  fi
+  local _sql="$(ns/dir ${BASH_SOURCE})/net_ipfw.sql"
+  sql/init "${net_ipfw_db}" "${_sql}"
+}
+
+function net/ipfw/zero() {
+  ${net_ipfw} flush
+  ${net_ipfw} zero
+  msg "Firewall flushed"
+}
+
+function net/ipfw/vacuum() {
+  import sql
+  sql/vacuum "${net_ipfw_db}"
+  msg "Firewall vacuumed"
+  net/ipfw/zero
+}
+
+function net/ipfw/pointer() {
+  if lessthan $# 1 ; then $failure ; fi
+
+  # rule pointer
+  net_ipfw_rp=${1}
+
+  # set pointer
+  if ! empty "${2}" ; then
+    net_ipfw_sp=${2}
+  fi
+}
+
+function net/ipfw/default() {
+  net/ipfw/set
+
+  # loopback
+  local lo="${net_ipfw_lo}"
+
+  # rule set pointer
+  net/ipfw/pointer ${net_ipfw_meme}
+  net/ipfw/deny  log ip  from any to any not verrevpath in
+  net/ipfw/allow     ip  from me  to me
+
+  # filter spoof
+  net/ipfw/pointer ${net_ipfw_spoof}
+  net/ipfw/deny  log ip  from $lo to any in
+  net/ipfw/deny  log ip  from any to $lo in
+
+  # filter nmap
+  net/ipfw/pointer ${net_ipfw_nmap}
+  net/ipfw/deny  log ip  from any to any ipoptions rr,ts,ssrr,lsrr in
+
+  # filter spoof extra
+  net/ipfw/pointer ${net_ipfw_frag}
+  net/ipfw/deny  log tcp from any to any frag
+  net/ipfw/deny  log tcp from any to $lo in
+  net/ipfw/deny  log tcp from any to any 0 in
+
+  # lock down 182
+  net/ipfw/pointer ${net_ipfw_lock}
+  net/ipfw/deny  log any from any to any
+}
+
+function net/ipfw/allow() {
+  net/ipfw/add allow ${net_ipfw_rp} ${net_ipfw_sp} $*
+}
+
+function net/ipfw/deny() {
+  net/ipfw/add deny ${net_ipfw_rp} ${net_ipfw_sp} $*
+}
+
+function net/ipfw/add() {
+  local _a=${1}
+  shift
+  local _r=${1}
+  shift
+  local _s=${1}
+
+}

@@ -1,0 +1,7 @@
+#!/bin/bash
+source $(dirname ${BASH_SOURCE})/../../shf3/lib/header
+include ${HOME}/shf3.osxfw/lib
+import gui
+import osx/ipfw
+
+osx/ipfw/mgr $*

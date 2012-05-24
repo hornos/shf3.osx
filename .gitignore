@@ -1,0 +1,8 @@
+.DS*
+.#*
+*.old
+*.old*
+*.new
+*.sqlite
+scr/*
+_*
