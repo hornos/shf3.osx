@@ -1,0 +1,41 @@
+#!/bin/bash
+source $(dirname ${BASH_SOURCE})/../../lib/header
+
+_xampp_root="${HOME}/XAMPP/xamppfiles"
+
+function help/xampp() {
+  cat <<EOF
+Usage: ${gbn} [start|stop|restart]
+EOF
+  exit 1
+}
+
+if test $# -lt 1 ; then
+  help/xampp
+fi
+
+_http="${_xampp_root}/bin/apachectl"
+_sql="${_xampp_root}/bin/mysql.server"
+
+case "${1}" in
+  start)
+    ${_http} start
+    ${_sql} start
+  ;;
+
+  stop)
+    ${_http} stop
+    ${_sql} stop
+  ;;
+
+  restart)
+    ${_http} stop
+    ${_http} start
+    ${_sql} stop
+    ${_sql} start
+  ;;
+
+  *)
+    help/xampp
+  ;;
+esac

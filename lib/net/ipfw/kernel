@@ -4,6 +4,15 @@ function help/net/ipfw() {
 EOF
 }
 
+
+function net/ipfw/mgr() {
+  local _c=$(sql/count "${enc_pass_db}" "${enc_pass_tb}")
+      if test ${_c} -lt 0 ; then
+        return ${_false_}
+      fi
+
+}
+
 function net/ipfw/init() {
   import sql
   msg/debug "Database: ${net_ipfw_db}"
@@ -80,10 +89,19 @@ function net/ipfw/deny() {
 }
 
 function net/ipfw/add() {
+  import sql
+
   local _a=${1}
   shift
   local _r=${1}
   shift
   local _s=${1}
+  shift
+  local _rule=$*
+  if empty "${_rule}" ; then $failure ; fi
 
+  local _f=("rno" "sno" "act" "rule")
+  local _v=("${_r}" "${_s}" "${_act}" "${_rule}")
+
+  sql/insert "${net_ipfw_db}" "${net_ipfw_tb}" "${_f[*]}" "${_v[*]}"
 }
