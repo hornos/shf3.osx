@@ -17,22 +17,35 @@ fi
 _http="${_xampp_root}/bin/apachectl"
 _sql="${_xampp_root}/bin/mysql.server"
 
+
+function xampp/start() {
+  local i
+  for i in "${_http}" "${_sql}" ; do
+    ${i} start
+    sleep 1
+  done
+}
+
+function xampp/stop() {
+  local i
+  for i in "${_http}" "${_sql}" ; do
+    ${i} stop
+    sleep 1
+  done
+}
+
 case "${1}" in
   start)
-    ${_http} start
-    ${_sql} start
+    xampp/start
   ;;
 
   stop)
-    ${_http} stop
-    ${_sql} stop
+    xampp/stop
   ;;
 
   restart)
-    ${_http} stop
-    ${_http} start
-    ${_sql} stop
-    ${_sql} start
+    xampp/stop
+    xampp/start
   ;;
 
   *)
