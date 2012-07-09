@@ -1,5 +1,5 @@
 #!/bin/bash
-source $(dirname ${BASH_SOURCE})/../../lib/header
+source $(dirname ${BASH_SOURCE})/../../shf3/lib/header
 
 _xampp_root="${HOME}/XAMPP/xamppfiles"
 
